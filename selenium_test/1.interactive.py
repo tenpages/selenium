@@ -7,15 +7,17 @@ from selenium.common.exceptions import NoSuchElementException
 from bs4 import BeautifulSoup
 
 import time
+import re
+import json
 
 browser = webdriver.Chrome()
 browser.get("http://www.linkedin.com")
 browser.maximize_window()
 
 input_str=browser.find_element_by_xpath("//input[@type='text'][@class='login-email']")
-input_str.send_keys("13300180080@fudan.edu.cn")#("==your mail here==")
+input_str.send_keys("gu.datalab6@gmail.com")#("==your mail here==")
 input_str=browser.find_element_by_name("session_password")
-input_str.send_keys("665991")#("==your pswd here==")
+input_str.send_keys("gudatala")#("==your pswd here==")
 time.sleep(1)
 input_str.send_keys(Keys.RETURN)
 print("logged in")
@@ -26,7 +28,7 @@ time.sleep(5)
 input_str=browser.find_element_by_xpath	("//input[@role='combobox'][@type='text']")
 print('found')
 input_str.clear()
-input_str.send_keys('lisa sasa')
+input_str.send_keys('lisa singh')
 input_str.send_keys(Keys.RETURN)
 
 print("redirecting")
@@ -56,9 +58,33 @@ while (1):
 	except NoSuchElementException:
 		print("fin")
 		break
+	break
 
 print("%d links collected."%len(links))
 
+profile={}
+cnt=0
 for link in links:
 	browser.get("https://www.linkedin.com"+link)
+
 	time.sleep(3)
+	browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
+	current_profile={}
+
+	top_card=browser.find_element_by_css_selector("div[class='pv-top-card-section__information mt3 ember-view']")
+	soup_top_card=BeautifulSoup(top_card.get_attribute("innerHTML"),"lxml")
+	divs=soup_top_card.find_all('div')
+	current_profile['name']=divs[0].h1.string
+	current_profile['headline']=soup_top_card.h2.string
+	
+	experiences=divs[2].find_all('h3')
+	for experience in experiences:
+		current_profile[re.findall('\S*__(\S*)',experience['class'][0])[0]]=experience.string.strip()
+
+	profile[cnt]=current_profile
+	cnt+=1	
+	#break
+
+with open("profiles.json","w") as f:
+	json.dump(profile,f)
