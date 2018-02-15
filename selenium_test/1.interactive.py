@@ -10,14 +10,18 @@ import time
 import re
 import json
 
+search_name='lisa singh'
+username="gu.datalab6@gmail.com"
+password="gudatala"
+
 browser = webdriver.Chrome()
 browser.get("http://www.linkedin.com")
 browser.maximize_window()
 
 input_str=browser.find_element_by_xpath("//input[@type='text'][@class='login-email']")
-input_str.send_keys("gu.datalab6@gmail.com")#("==your mail here==")
+input_str.send_keys(username)#("==your mail here==")
 input_str=browser.find_element_by_name("session_password")
-input_str.send_keys("gudatala")#("==your pswd here==")
+input_str.send_keys(password)#("==your pswd here==")
 time.sleep(1)
 input_str.send_keys(Keys.RETURN)
 print("logged in")
@@ -28,7 +32,7 @@ time.sleep(5)
 input_str=browser.find_element_by_xpath	("//input[@role='combobox'][@type='text']")
 print('found')
 input_str.clear()
-input_str.send_keys('lisa singh')
+input_str.send_keys(search_name)
 input_str.send_keys(Keys.RETURN)
 
 print("redirecting")
